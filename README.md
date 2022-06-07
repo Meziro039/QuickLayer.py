@@ -5,7 +5,7 @@ QuickLayer.pyは、ファイル階層の相対パスを入力すると絶対パ�
 
 ## 使い方
 ### 基本
-'quicklayer.get(__file__, "{Layer}")'
+`quicklayer.get(__file__, "{Layer}")`
 
 ### {Layer}
 `..` or `../..`  

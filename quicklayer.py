@@ -11,12 +11,12 @@ def get(file_ql=None, layer=None):
         # 出力
     output = None
         # その他
-    while_x = 0 #while カウント
-    while_y = 0 #while カウント
+    while_x = 0 # カウント
+    while_y = 0 # カウント
+    while_z = 0 # カウント
     check_x = []
 
-    # 入力がない時の処理をここに入れる
-    print("dev" + file_ql)
+    # 未入力エラー処理
     if file_ql == "None":
         output = None
         print("Error: Incorrect file value.\nInfo: (__file__,\"Layer\")の形式で入力する必要があります。")
@@ -26,12 +26,11 @@ def get(file_ql=None, layer=None):
         print("Error: Incorrect layer value.\nInfo: (__file__,\"Layer\")の形式で入力する必要があります。")
         return(output)
 
-    # file_qlの処理
+    # file_ql処理
     file_list = file_ql.split(os.sep)
     del file_list[-1]
 
-            # エラー処理系
-    # 利用不可文字の判定
+    # 利用不可文の判定
     while True:
         if not_inject_list[while_x] in layer:
             output = None
@@ -42,24 +41,24 @@ def get(file_ql=None, layer=None):
         if while_x == len(not_inject_list) - 1:
             break
         else:
-            while_x = while_x + 1
+            while_x += 1
 
-    # Layerの処理
+    # Layer処理
     layer = layer.split('/')
 
-    # 空白が含まれていないか
+    # 空白判定
     if "" in layer:
         output = None
         print("Error: Incorrect layer value.\nInfo: 入力値に空白が含まれています。")
         return(output)
 
-    # ドット単体が含まれていないか
+    # ドット単体判定
     if "." in layer:
         output = None
         print("Error: Incorrect layer value.\nInfo: 入力値にドット(単体)が含まれています。")
         return(output)
 
-    # ..が中間に含まれていた場合のエラー処理
+    # ..が中間に存在するか
     while True:
         # ..を使っているか/含まれているか
         if layer[0] in "..":
@@ -72,7 +71,7 @@ def get(file_ql=None, layer=None):
             else:
                 break
 
-        # ..が中間に含まれているか
+        # ..が中間にあるか
         if layer[while_y] in "..":
             check_x.append("Y")
             if check_x[while_y - 1] in "N":
@@ -86,10 +85,21 @@ def get(file_ql=None, layer=None):
         if while_y == len(layer) - 1:
             break
         else:
-            while_y = while_y + 1
-            #ここまで
+            while_y += 1
 
-    # ..分リストを後ろから消す 先端が(..)なら消して階層の末尾を消す。ここも階層消せなくなったらエラー消しすぎです！
+    # ドットだけのリスト値の判定
+    while True:
+        if layer[while_z].count("") - 1 == layer[while_z].count(".") and layer[while_z].count(".") > 2:
+            output = None
+            print("Error: Incorrect layer value.\nInfo: 入力値にドットのみが含まれる値が存在します。")
+            return(output)
+            
+        if while_z == len(layer) - 1:
+            break
+        else:
+            while_z += 1
+
+    # 上位層移動処理
     while True:
         if layer[0] == "..":
             if len(file_list) > 1:
@@ -109,9 +119,4 @@ def get(file_ql=None, layer=None):
     output= os.sep.join(file_list) + os.sep + os.sep.join(layer)
     return(output)
 
-    print("FileList: " + str(file_list))
-    print("LayerList: " + str(layer))
-
-    # 
-    
-    #len(file_list)
+# C/https://github.com/Meziro039
